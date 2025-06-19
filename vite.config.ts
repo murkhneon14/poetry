@@ -40,4 +40,25 @@ window.addEventListener('message', async (message) => {
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          convex: ['convex/browser'],
+        },
+      },
+    },
+  },
+  server: {
+    port: 3003,  // Changed to 3003 to avoid conflicts
+    strictPort: true,
+  },
+  preview: {
+    port: 3002,  // Changed to a different port
+    strictPort: true,
+  },
 }));
