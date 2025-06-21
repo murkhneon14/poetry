@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 interface CreatePoemModalProps {
   isDark: boolean;
+  isOpen: boolean;
   onClose: () => void;
 }
 

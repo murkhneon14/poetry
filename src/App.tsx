@@ -3,9 +3,11 @@ import { api } from "../convex/_generated/api";
 import { SignInForm } from "./SignInForm";
 import { SignOutButton } from "./SignOutButton";
 import { Toaster } from "sonner";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { CreatePoemModal } from "./components/CreatePoemModal";
 import { ThemeToggle } from "./components/ThemeToggle";
+import { ProfileEditor } from "./components/ProfileEditor";
+import { SubscriptionPlans } from "./components/SubscriptionPlans";
 
 type ViewType = 'home' | 'explore';
 
@@ -88,10 +90,26 @@ const PoemCard = ({
 
 export default function App() {
   const [isDark, setIsDark] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showSignIn, setShowSignIn] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const [showProfileEditor, setShowProfileEditor] = useState(false);
+  const [showSubscriptionPlans, setShowSubscriptionPlans] = useState(false);
   const [activeView, setActiveView] = useState<ViewType>('home');
   const [expandedPoemId, setExpandedPoemId] = useState<string | null>(null);
+  // Define the user type
+  type UserProfile = {
+    _id: string;
+    name?: string;
+    email?: string;
+    bio?: string;
+    instagram?: string;
+    twitter?: string;
+    profilePicture?: string | null;
+  };
+
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
   
   const samplePoems = [
     {
@@ -168,6 +186,37 @@ export default function App() {
   const incrementVisitors = useMutation(api.poems.incrementVisitorCount);
   const loggedInUser = useQuery(api.auth.loggedInUser);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setShowProfileDropdown(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [profileRef]);
+
+  // Update current user when loggedInUser changes
+  useEffect(() => {
+    if (loggedInUser) {
+      setCurrentUser({
+        _id: loggedInUser._id,
+        name: loggedInUser.name || 'user',
+        email: loggedInUser.email || '',
+        bio: loggedInUser.bio || '',
+        instagram: loggedInUser.instagram || '',
+        twitter: loggedInUser.twitter || '',
+        profilePicture: loggedInUser.profilePicture || null
+      });
+    } else {
+      setCurrentUser(null);
+    }
+  }, [loggedInUser]);
+
   useEffect(() => {
     // Increment visitor count on first load
     incrementVisitors();
@@ -236,9 +285,90 @@ export default function App() {
             </div>
             
             {/* User Icon on the right */}
-            <div className="flex items-center">
+            <div className="flex items-center relative" ref={profileRef}>
               <Authenticated>
-                <SignOutButton />
+                <div className="relative">
+                  <button
+                    onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                    className={`p-2 rounded-full transition-colors ${
+                      isDark 
+                        ? 'hover:bg-gray-700/50 text-gray-200' 
+                        : 'hover:bg-gray-100 text-gray-700'
+                    }`}
+                    title="Profile"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white">
+                      👤
+                    </div>
+                  </button>
+                  
+                  {/* Profile Dropdown */}
+                  {showProfileDropdown && (
+                    <div 
+                      className={`absolute right-0 mt-2 w-64 rounded-xl shadow-xl z-50 overflow-hidden backdrop-blur-lg ${
+                        isDark 
+                          ? 'bg-black/40 border border-gray-700/50' 
+                          : 'bg-white/80 border border-gray-200/50'
+                      }`}
+                    >
+                      <div className="p-4 border-b border-gray-200/30 dark:border-gray-700/50">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white">
+                            {currentUser?.name?.charAt(0).toUpperCase() || 'U'}
+                          </div>
+                          <div>
+                            <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                              {currentUser?.name ? `@${currentUser.name}` : 'user'}
+                            </p>
+                            {currentUser?.email && (
+                              <p className="text-xs text-gray-500">
+                                {currentUser.email}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="py-1">
+                        <button
+                          onClick={() => {
+                            setShowProfileEditor(true);
+                            setShowProfileDropdown(false);
+                          }}
+                          className={`w-full text-left px-4 py-3 text-sm flex items-center ${
+                            isDark 
+                              ? 'text-gray-200 hover:bg-gray-700/50' 
+                              : 'text-gray-700 hover:bg-gray-100/70'
+                          }`}
+                        >
+                          <span className="mr-3">👤</span>
+                          <span>Edit Profile</span>
+                        </button>
+                        
+                        <button
+                          onClick={() => {
+                            setShowSubscriptionPlans(true);
+                            setShowProfileDropdown(false);
+                          }}
+                          className={`w-full text-left px-4 py-3 text-sm flex items-center ${
+                            isDark 
+                              ? 'text-yellow-300 hover:bg-gray-700/50' 
+                              : 'text-yellow-600 hover:bg-gray-100/70'
+                          }`}
+                        >
+                          <span className="mr-3">✨</span>
+                          <span>Upgrade Plan</span>
+                        </button>
+                        
+                        
+                        
+                        <div className="border-t border-gray-200/30 dark:border-gray-700/50 my-1"></div>
+                        
+                        <SignOutButton className="w-full justify-start" />
+                      </div>
+                    </div>
+                  )}
+                </div>
               </Authenticated>
               <Unauthenticated>
                 <button
@@ -397,12 +527,12 @@ export default function App() {
       <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-30">
         <button
           onClick={() => setShowCreateModal(true)}
-          className={`glass-button px-8 py-4 text-lg font-medium ${
+          className={`glass-button px-6 py-3 text-base font-medium ${
             isDark ? 'text-white bg-black/30' : 'text-gray-900 bg-white/30'
           }`}
         >
           <span className="relative z-10 drop-shadow-md">
-            Create your own poetry page <span className="ml-1">✨</span>
+            Create Poem <span className="ml-1">✍️</span>
           </span>
         </button>
       </div>
@@ -411,11 +541,68 @@ export default function App() {
       {showCreateModal && (
         <CreatePoemModal
           isDark={isDark}
+          isOpen={showCreateModal}
           onClose={() => setShowCreateModal(false)}
         />
       )}
 
-      <Toaster />
+      {/* Profile Editor Modal */}
+      {showProfileEditor && currentUser && (
+        <ProfileEditor 
+          user={{
+            username: currentUser.name || '',
+            email: currentUser.email || '',
+            bio: currentUser.bio,
+            instagram: currentUser.instagram,
+            twitter: currentUser.twitter,
+            profilePicture: currentUser.profilePicture
+          }}
+          onClose={() => setShowProfileEditor(false)}
+          onSave={(updates) => {
+            setCurrentUser(prev => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                name: updates.username,
+                bio: updates.bio || '',
+                instagram: updates.instagram || '',
+                twitter: updates.twitter || '',
+                profilePicture: updates.profilePicture || null
+              };
+            });
+          }}
+          isDark={isDark}
+        />
+      )}
+      
+      <Toaster position="top-center" richColors />
+
+      {/* Subscription Plans Modal */}
+      {showSubscriptionPlans && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="relative w-full max-w-2xl">
+            <button
+              onClick={() => setShowSubscriptionPlans(false)}
+              className={`absolute -top-10 right-0 p-2 rounded-full transition-colors ${
+                isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
+              }`}
+            >
+              <svg 
+                className={`w-6 h-6 ${isDark ? 'text-white' : 'text-gray-800'}`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <SubscriptionPlans 
+              isDark={isDark} 
+              onClose={() => setShowSubscriptionPlans(false)} 
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -2,5 +2,28 @@
   "projectConfig": {
     "projectId": "poetry-garden"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "environmentVariables": {
+    "RAZORPAY_KEY_ID": "rzp_test_npyk2d6MS04MCA",
+    "RAZORPAY_KEY_SECRET": "v6VDDAAv61CnBKDCAtja9QuG"
+  },
+  "http": {
+    "routes": [
+      {
+        "path": "/health",
+        "method": "GET",
+        "handler": "health"
+      },
+      {
+        "path": "/create-razorpay-order",
+        "method": "POST",
+        "handler": "createRazorpayOrder"
+      },
+      {
+        "path": "/create-razorpay-order",
+        "method": "OPTIONS",
+        "handler": "handleOptions"
+      }
+    ]
+  }
 }

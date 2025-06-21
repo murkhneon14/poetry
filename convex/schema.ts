@@ -15,6 +15,15 @@ const applicationTables = {
   visitors: defineTable({
     count: v.number(),
   }),
+
+  // Extended user profile
+  userProfiles: defineTable({
+    userId: v.id("users"),
+    bio: v.optional(v.string()),
+    instagram: v.optional(v.string()),
+    twitter: v.optional(v.string()),
+    profilePicture: v.optional(v.string()),
+  }).index("by_user", ["userId"]),
 };
 
 export default defineSchema({

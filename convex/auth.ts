@@ -17,6 +17,19 @@ export const loggedInUser = query({
     if (!user) {
       return null;
     }
-    return user;
+
+    // Get extended profile
+    const profile = await ctx.db
+      .query("userProfiles")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .first();
+
+    return {
+      ...user,
+      bio: profile?.bio || "",
+      instagram: profile?.instagram || "",
+      twitter: profile?.twitter || "",
+      profilePicture: profile?.profilePicture || null,
+    };
   },
 });
