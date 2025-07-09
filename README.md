@@ -1,28 +1,67 @@
-# Poetry Sharing Platform
-  
-This is a project built with [Chef](https://chef.convex.dev) using [Convex](https://convex.dev) as its backend.
-  
-This project is connected to the Convex deployment named [`compassionate-boar-83`](https://dashboard.convex.dev/d/compassionate-boar-83).
-  
-## Project structure
-  
-The frontend code is in the `app` directory and is built with [Vite](https://vitejs.dev/).
-  
-The backend code is in the `convex` directory.
-  
-`npm run dev` will start the frontend and backend servers.
+<h1 align="center">🕊️ Sufivaad</h1>
+<p align="center"><i>Whispers of poetry. Echoes of soul.</i></p>
+<p align="center">
+  <a href="https://sufivaad.netlify.app"><strong>Visit Live ↗</strong></a>
+</p>
 
-## App authentication
+---
 
-Chef apps use [Convex Auth](https://auth.convex.dev/) with Anonymous auth for easy sign in. You may wish to change this before deploying your app.
+## 🌿 What is Sufivaad?
 
-## Developing and deploying your app
+**Sufivaad** is a minimalist poetry-sharing platform built for those who express through verses.
 
-Check out the [Convex docs](https://docs.convex.dev/) for more information on how to develop with Convex.
-* If you're new to Convex, the [Overview](https://docs.convex.dev/understanding/) is a good place to start
-* Check out the [Hosting and Deployment](https://docs.convex.dev/production/) docs for how to deploy your app
-* Read the [Best Practices](https://docs.convex.dev/understanding/best-practices/) guide for tips on how to improve you app further
+It’s designed for readers and writers who believe in:
+- soulful words 🌙  
+- free expression 🖋️  
+- and poetic connection 🤝
 
-## HTTP API
+You can publish anonymously or with your name. Read, feel, and float through the verses shared by others.
 
-User-defined http routes are defined in the `convex/router.ts` file. We split these routes into a separate file from `convex/http.ts` to allow us to prevent the LLM from modifying the authentication routes.
+---
+
+## 💡 Highlights
+
+- ✍️ Publish original poetry anonymously or with a name
+- 🔐 Anonymous login – no sign-up friction
+- 🌑 Clean, distraction-free dark UI
+- 📱 Mobile-responsive layout
+- 🧠 Built for personal expression, not algorithmic validation
+
+---
+
+## ⚙️ Tech Stack
+
+- **Frontend:** Vite + Vanilla JS + Custom Styling   
+- **Deployment:** [Netlify](https://netlify.app)
+
+---
+
+## 🚀 Live Site
+
+👉 [https://sufivaad.netlify.app/](https://sufivaad.netlify.app/)
+
+---
+
+## 📸 Screenshots
+
+> ![image](https://github.com/user-attachments/assets/fda767cb-b11a-4c8a-8489-f1c30008ad7c)
+
+> 
+
+
+---
+
+## 📂 Folder Structure (Sample)
+
+```bash
+sufivaad/
+├── app/           # Frontend (HTML/CSS/JS)
+├── convex/        # Backend logic & routes
+│   ├── functions/
+│   ├── http.ts
+│   └── router.ts
+├── .env
+└── package.json
+
+
+
